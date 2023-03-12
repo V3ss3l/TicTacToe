@@ -45,6 +45,8 @@
             this.button_8 = new System.Windows.Forms.Button();
             this.button_9 = new System.Windows.Forms.Button();
             this.AITimer = new System.Windows.Forms.Timer(this.components);
+            this.labelPlayer = new System.Windows.Forms.Label();
+            this.labelPC = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -109,7 +111,7 @@
             // 
             this.label_Message.AutoSize = true;
             this.label_Message.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label_Message.Location = new System.Drawing.Point(352, 258);
+            this.label_Message.Location = new System.Drawing.Point(352, 267);
             this.label_Message.MaximumSize = new System.Drawing.Size(250, 0);
             this.label_Message.Name = "label_Message";
             this.label_Message.Size = new System.Drawing.Size(218, 29);
@@ -220,11 +222,35 @@
             this.AITimer.Interval = 1000;
             this.AITimer.Tick += new System.EventHandler(this.pcMove);
             // 
+            // labelPlayer
+            // 
+            this.labelPlayer.AutoSize = true;
+            this.labelPlayer.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelPlayer.ForeColor = System.Drawing.Color.DarkCyan;
+            this.labelPlayer.Location = new System.Drawing.Point(357, 159);
+            this.labelPlayer.Name = "labelPlayer";
+            this.labelPlayer.Size = new System.Drawing.Size(159, 24);
+            this.labelPlayer.TabIndex = 12;
+            this.labelPlayer.Text = "Игрок выиграл - ";
+            // 
+            // labelPC
+            // 
+            this.labelPC.AutoSize = true;
+            this.labelPC.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelPC.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.labelPC.Location = new System.Drawing.Point(354, 209);
+            this.labelPC.Name = "labelPC";
+            this.labelPC.Size = new System.Drawing.Size(210, 24);
+            this.labelPC.TabIndex = 13;
+            this.labelPC.Text = "Компьютер выиграл - ";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(602, 341);
+            this.ClientSize = new System.Drawing.Size(602, 358);
+            this.Controls.Add(this.labelPC);
+            this.Controls.Add(this.labelPlayer);
             this.Controls.Add(this.button_9);
             this.Controls.Add(this.button_8);
             this.Controls.Add(this.button_7);
@@ -262,6 +288,8 @@
         private System.Windows.Forms.Button button_8;
         private System.Windows.Forms.Button button_9;
         private System.Windows.Forms.Timer AITimer;
+        private System.Windows.Forms.Label labelPlayer;
+        private System.Windows.Forms.Label labelPC;
     }
 }
 
