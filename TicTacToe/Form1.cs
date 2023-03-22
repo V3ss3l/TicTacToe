@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TicTacToe
@@ -19,57 +12,38 @@ namespace TicTacToe
         {
             X, O
         }
-        private bool _firstPlayer;
         private bool _finishGame;
         private int _playerWins;
         private int _pcWins;
         private Player realPlayer;
         private Player pcPlayer;
-        private int[,] _gameBoard;
-        private List<Button> _buttonArr;
+        private char[] _gameBoard;
+        private Button[] _buttonArr;
         private Random rand = new Random();
         #endregion
         public Form1()
         {
             InitializeComponent();
-            /* _gameBoard = new int[,]
-             {
-                 { 0, 0, 0 },
-                 { 0, 0, 0 },
-                 { 0, 0, 0}
-             };*/
-            loadButtons();
-            _firstPlayer = true;
+            _gameBoard = new char[9] { '-', '-', '-', '-', '-', '-', '-', '-', '-' };
+            LoadButtons();
             realPlayer = Player.X;
             pcPlayer = Player.O;
-            _finishGame = false;
+            _finishGame = true;
             _playerWins = 0;
             _pcWins = 0;
         }
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-            _firstPlayer = false;
-            realPlayer = Player.O;
-            pcPlayer = Player.X;
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            _firstPlayer = true;
-            realPlayer = Player.X;
-            pcPlayer = Player.O;
-        }
-
         private void button_Click(object sender, EventArgs e)
         {
+            if (!(_gameBoard.Contains('X') || _gameBoard.Contains('O')) && _finishGame)
+            {
+                MessageBox.Show("Нажмите кнопку ИГРАТЬ для начала игры!");
+                return;
+            }
             Button playButton = (Button)sender;
-            if (_firstPlayer) playButton.BackColor = Color.Cyan;
-            else playButton.BackColor = Color.Red;
-            playButton.Text = realPlayer.ToString();
-            playButton.Enabled = false;
-            //var index = _buttonArr.IndexOf(playButton);
-            _buttonArr.Remove(playButton);
+            var index = int.Parse(playButton.Name.Last<char>().ToString());
+            _gameBoard[index - 1] = 'X';
+            MakeMove(Color.Cyan, realPlayer.ToString(), playButton);
             Check();
             if (!_finishGame)
             {
@@ -80,18 +54,28 @@ namespace TicTacToe
 
         private void pcMove(object sender, EventArgs e)
         {
-            if(_buttonArr.Count > 0)
+            if (!_gameBoard.Contains('-')) AITimer.Stop();
+            var bestScore = int.MinValue;
+            var moveI = -1;
+            for (int i = 0; i < _gameBoard.Length; i++)
             {
-                var index = rand.Next(_buttonArr.Count);
-                _buttonArr[index].Enabled = false;
-                _buttonArr[index].Text = pcPlayer.ToString();
-                if (_firstPlayer) _buttonArr[index].BackColor = Color.Red;
-                else _buttonArr[index].BackColor = Color.Cyan;
-                _buttonArr.RemoveAt(index);
-                Check();
-                label_Message.Text = "Компьютер ждет ваш ход!";
-                AITimer.Stop();
+                if (_gameBoard[i] == '-')
+                {
+                    _gameBoard[i] = 'O';
+                    var score = Minimax(_gameBoard, 'O');
+                    _gameBoard[i] = '-';
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        moveI = i;
+                    }
+                }
             }
+            _gameBoard[moveI] = 'O';
+            MakeMove(Color.Red, pcPlayer.ToString(), _buttonArr[moveI]);
+            Check();
+            label_Message.Text = "Компьютер ждет ваш ход!";
+            AITimer.Stop();
         }
 
         private void button_Clear_Click(object sender, EventArgs e)
@@ -110,7 +94,8 @@ namespace TicTacToe
                     ((Button)X).BackColor = default(Color);
                 }
             }
-            loadButtons();
+            LoadButtons();
+            _gameBoard = new char[9] { '-', '-', '-', '-', '-', '-', '-', '-', '-' };
             label_Message.Text = "Нажмите играть";
             _finishGame = true;
         }
@@ -118,74 +103,45 @@ namespace TicTacToe
         private void button_Play_Click(object sender, EventArgs e)
         {
             _finishGame = false;
-            if (!_firstPlayer)
-            {
-                label_Message.Text = "Компьютер делает свой ход...";
-                button_5.Enabled = false;
-                button_5.Text = pcPlayer.ToString();
-                button_5.BackColor = Color.Cyan;
-                _buttonArr.Remove(button_5);
-                label_Message.Text = "Компьютер ждет ваш ход!";
-            }
-            else
-            {
-                label_Message.Text = "Компьютер ждет ваш ход!";
-            }
+            label_Message.Text = "Компьютер ждет ваш ход!";
         }
 
-        private void loadButtons()
+        private void MakeMove(Color color, string text, Button button)
         {
-            _buttonArr = new List<Button> {
+            button.BackColor = color;
+            button.Text = text;
+            button.Enabled = false;
+        }
+
+
+        private void LoadButtons()
+        {
+            _buttonArr = new Button[] {
                 button_1, button_2, button_3, button_4, button_5, button_6, button_7, button_8, button_9
             };
         }
 
         private void Check()
         {
-            if (button_1.Text == "X" && button_2.Text == "X" && button_3.Text == "X"
-               || button_4.Text == "X" && button_5.Text == "X" && button_6.Text == "X"
-               || button_7.Text == "X" && button_9.Text == "X" && button_8.Text == "X"
-               || button_1.Text == "X" && button_4.Text == "X" && button_7.Text == "X"
-               || button_2.Text == "X" && button_5.Text == "X" && button_8.Text == "X"
-               || button_3.Text == "X" && button_6.Text == "X" && button_9.Text == "X"
-               || button_1.Text == "X" && button_5.Text == "X" && button_9.Text == "X"
-               || button_3.Text == "X" && button_5.Text == "X" && button_7.Text == "X")
+            if (IsWin(_gameBoard, 'X'))
             {
                 AITimer.Stop();
-                if (realPlayer.Equals(Player.X)) Score(1);
-                else Score(2);
+                Score(1);
                 resetGame();
             }
-            else if (button_1.Text == "O" && button_2.Text == "O" && button_3.Text == "O"
-            || button_4.Text == "O" && button_5.Text == "O" && button_6.Text == "O"
-            || button_7.Text == "O" && button_9.Text == "O" && button_8.Text == "O"
-            || button_1.Text == "O" && button_4.Text == "O" && button_7.Text == "O"
-            || button_2.Text == "O" && button_5.Text == "O" && button_8.Text == "O"
-            || button_3.Text == "O" && button_6.Text == "O" && button_9.Text == "O"
-            || button_1.Text == "O" && button_5.Text == "O" && button_9.Text == "O"
-            || button_3.Text == "O" && button_5.Text == "O" && button_7.Text == "O")
+            else if (IsWin(_gameBoard, 'O'))
             {
                 AITimer.Stop();
-                if (realPlayer.Equals(Player.O)) Score(1);
-                else Score(2);
+                Score(2);
                 resetGame();
             }
-            if(_buttonArr.Count == 0) {
+            if (!_gameBoard.Contains('-'))
+            {
                 MessageBox.Show("Ничья!");
                 resetGame();
             }
+        }
 
-            /*if (button_1.Text == button_2.Text  && button_2.Text == button_3.Text
-               || button_4.Text == "X" && button_5.Text == "X" && button_6.Text == "X"
-               || button_7.Text == "X" && button_9.Text == "X" && button_8.Text == "X"
-               || button_1.Text == "X" && button_4.Text == "X" && button_7.Text == "X"
-               || button_2.Text == "X" && button_5.Text == "X" && button_8.Text == "X"
-               || button_3.Text == "X" && button_6.Text == "X" && button_9.Text == "X"
-               || button_1.Text == "X" && button_5.Text == "X" && button_9.Text == "X"
-               || button_3.Text == "X" && button_5.Text == "X" && button_7.Text == "X")
-            {*/
-            }
-        
         private void Score(int choice)
         {
             switch (choice)
@@ -201,18 +157,69 @@ namespace TicTacToe
                     labelPC.Text = "Компьютер выиграл - " + _pcWins;
                     break;
             }
-            /*if ((_firstPlayer && realPlayer.Equals(Player.X)) || (!_firstPlayer && realPlayer.Equals(Player.O)))
+        }
+
+        private bool IsWin(char[] board, char str) => board[0] == str && board[1] == str && board[2] == str
+               || board[3] == str && board[4] == str && board[5] == str
+               || board[6] == str && board[7] == str && board[8] == str
+               || board[0] == str && board[3] == str && board[6] == str
+               || board[1] == str && board[4] == str && board[7] == str
+               || board[2] == str && board[5] == str && board[8] == str
+               || board[0] == str && board[4] == str && board[8] == str
+               || board[2] == str && board[4] == str && board[6] == str;
+
+        private int CheckWhoWins(char[] board, char str)
+        {
+            if (IsWin(board, str))
             {
-                MessageBox.Show("Игрок выиграл!");
-                _playerWins++;
-                labelPlayer.Text = "Игрок выиграл - " + _playerWins;
+                var score = 1;
+                for (int i = 0; i < board.Length; i++)
+                    if (board[i] == '-') score++;
+                return score;
             }
-            else if((!_firstPlayer && pcPlayer.Equals(Player.X)) || (_firstPlayer && pcPlayer.Equals(Player.O)))
+            else return 0;
+        }
+
+        private int EmptyIndexes(char[] board)
+        {
+            var count = 0;
+            for(int i = 0; i < board.Length; i++)
             {
-                MessageBox.Show("Компьютер выиграл!");
-                _pcWins++;
-                labelPC.Text = "Компьютер выиграл - " + _pcWins;
-            }*/
+                if (board[i] == '-') count++;
+            }
+            return count;
+        }
+
+        private int Minimax(char[] board, char forWho)
+        {
+           var availSpots = EmptyIndexes(board);
+
+           if(IsWin(board, 'X')) { return -10; }
+           else if(IsWin(board, 'O')) { return 10; }
+           else if(availSpots == 0) { return 0; }
+
+            /* var score = CheckWhoWins(board, forWho);
+            if (score != 0)
+            {
+                return score;
+            }
+
+            var bestScore = forWho == 'O' ? int.MinValue : int.MaxValue;
+
+            int CalcBest(int x, int y) => (forWho == 'O' ? x > y : y > x) ? x : y;
+
+            for (var i = 0; i < board.Length; i++)
+            {
+                if (board[i] == '-')
+                {
+                    board[i] = forWho;
+                    var currentScore = Minimax(board, forWho == 'O' ? 'X' : 'O');
+                    board[i] = '-';
+
+                    bestScore = CalcBest(bestScore, currentScore);
+                }
+            }
+            return bestScore;*/
         }
     }
 }
