@@ -1,6 +1,6 @@
 ﻿namespace TicTacToe
 {
-    partial class Form1
+    partial class TicTacToe
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -33,7 +33,7 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.button_Clear = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button_Start = new System.Windows.Forms.Button();
             this.label_Message = new System.Windows.Forms.Label();
             this.button_1 = new System.Windows.Forms.Button();
             this.button_2 = new System.Windows.Forms.Button();
@@ -55,7 +55,7 @@
             this.groupBox1.Controls.Add(this.radioButton2);
             this.groupBox1.Controls.Add(this.radioButton1);
             this.groupBox1.Controls.Add(this.button_Clear);
-            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.button_Start);
             this.groupBox1.Location = new System.Drawing.Point(357, 24);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(233, 132);
@@ -97,15 +97,15 @@
             this.button_Clear.UseVisualStyleBackColor = true;
             this.button_Clear.Click += new System.EventHandler(this.button_Clear_Click);
             // 
-            // button1
+            // button_Start
             // 
-            this.button1.Location = new System.Drawing.Point(1, 102);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Играть";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button_Play_Click);
+            this.button_Start.Location = new System.Drawing.Point(1, 102);
+            this.button_Start.Name = "button_Start";
+            this.button_Start.Size = new System.Drawing.Size(75, 23);
+            this.button_Start.TabIndex = 0;
+            this.button_Start.Text = "Играть";
+            this.button_Start.UseVisualStyleBackColor = true;
+            this.button_Start.Click += new System.EventHandler(this.button_Play_Click);
             // 
             // label_Message
             // 
@@ -244,7 +244,7 @@
             this.labelPC.TabIndex = 13;
             this.labelPC.Text = "Компьютер выиграл - ";
             // 
-            // Form1
+            // TicTacToe
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -262,7 +262,7 @@
             this.Controls.Add(this.button_1);
             this.Controls.Add(this.label_Message);
             this.Controls.Add(this.groupBox1);
-            this.Name = "Form1";
+            this.Name = "TicTacToe";
             this.Text = "Form1";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -273,7 +273,7 @@
 
         #endregion
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_Start;
         private System.Windows.Forms.Label label_Message;
         private System.Windows.Forms.Button button_Clear;
         private System.Windows.Forms.Button button_1;

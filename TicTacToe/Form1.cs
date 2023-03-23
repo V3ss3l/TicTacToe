@@ -1,4 +1,9 @@
-﻿using System;
+﻿//
+// Программа создана студентом 3-ИАИТ-3 Анисимовым Г.А.
+//
+//23.03.23
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -6,40 +11,47 @@ using System.Windows.Forms;
 
 namespace TicTacToe
 {
-    
-    public partial class Form1 : Form
+
+    public partial class TicTacToe : Form
     {
         #region variables
-        public enum Player
+        public enum Player // перечисления для удобного задания символа игрока и ИИ
         {
             X = 'X', O = 'O'
         }
-        private bool _firstPlayer;
-        private bool _finishGame;
-        private int _playerWins;
-        private int _pcWins;
-        private char realPlayer;
-        private char pcPlayer;
-        private char[] _gameBoard;
-        private Button[] _buttonArr;
-        private Random rand = new Random();
+        private bool _firstPlayer; // булевая переменная для проверки, кто первый ходит (пользователь или компьютер)
+        private bool _finishGame; // булевая переменная для проверки на окончание игры
+        private int _playerWins; // счетчик побед игрока
+        private int _pcWins; // счетчик побед компьютера
+        private char realPlayer; // символ пользователя (Х или О)
+        private char pcPlayer; // символ компьютера (О или Х)
+        private char[] _gameBoard; // переменная игрового поля
+        private Button[] _buttonArr; // массив кнопок с формы
         #endregion
-        public Form1()
+        public TicTacToe()
         {
             InitializeComponent();
+            
             _gameBoard = new char[] {
                 '-', '-', '-' ,
                 '-', '-', '-',
                 '-', '-', '-' };
-            LoadButtons();
+            _buttonArr = new Button[] {
+                button_1, button_2, button_3, button_4, button_5, button_6, button_7, button_8, button_9
+            };
             _firstPlayer = true;
-            realPlayer = (char) Player.X;
-            pcPlayer = (char) Player.O;
+            realPlayer = (char)Player.X;
+            pcPlayer = (char)Player.O;
             _finishGame = true;
             _playerWins = 0;
             _pcWins = 0;
         }
 
+        /// <summary>
+        /// Метод, обрабатывающий клик на кнопку со стороны пользователя (сделать ход за пользователя)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_Click(object sender, EventArgs e)
         {
             if (!(_gameBoard.Contains('X') || _gameBoard.Contains('O')) && _finishGame)
@@ -60,6 +72,11 @@ namespace TicTacToe
             }
         }
 
+        /// <summary>
+        /// Метод отвечающий за ход компьютера
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pcMove(object sender, EventArgs e)
         {
             if (!_gameBoard.Contains('-'))
@@ -69,18 +86,26 @@ namespace TicTacToe
             }
             var moveI = Minimax(_gameBoard, pcPlayer).Index;
             _gameBoard[moveI] = pcPlayer;
-            if(_firstPlayer) MakeMove(Color.Red, pcPlayer.ToString(), _buttonArr[moveI]);
+            if (_firstPlayer) MakeMove(Color.Red, pcPlayer.ToString(), _buttonArr[moveI]);
             else MakeMove(Color.Cyan, pcPlayer.ToString(), _buttonArr[moveI]);
             Check();
             label_Message.Text = "Компьютер ждет ваш ход!";
             AITimer.Stop();
         }
 
+        /// <summary>
+        /// Обработчик события очистки формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_Clear_Click(object sender, EventArgs e)
         {
             resetGame();
         }
 
+        /// <summary>
+        /// Метод очищающий всю игру (все состояния и ходы)
+        /// </summary>
         private void resetGame()
         {
             foreach (Control X in this.Controls)
@@ -92,12 +117,17 @@ namespace TicTacToe
                     ((Button)X).BackColor = default(Color);
                 }
             }
-            LoadButtons();
+            _buttonArr = new Button[] { button_1, button_2, button_3, button_4, button_5, button_6, button_7, button_8, button_9 };
             _gameBoard = new char[9] { '-', '-', '-', '-', '-', '-', '-', '-', '-' };
             label_Message.Text = "Нажмите играть";
             _finishGame = true;
         }
 
+        /// <summary>
+        /// Обработчик события нажатия на клавишу старта игры
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_Play_Click(object sender, EventArgs e)
         {
             _finishGame = false;
@@ -111,6 +141,12 @@ namespace TicTacToe
             }
         }
 
+        /// <summary>
+        /// Метод отвечающий за исполнения хода игрока или компьютера
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="text"></param>
+        /// <param name="button"></param>
         private void MakeMove(Color color, string text, Button button)
         {
             button.BackColor = color;
@@ -118,14 +154,9 @@ namespace TicTacToe
             button.Enabled = false;
         }
 
-
-        private void LoadButtons()
-        {
-            _buttonArr = new Button[] {
-                button_1, button_2, button_3, button_4, button_5, button_6, button_7, button_8, button_9
-            };
-        }
-
+        /// <summary>
+        /// Метод отвечающий за проверки победы или поражения или ничьи в игре
+        /// </summary>
         private void Check()
         {
             if (IsWin(_gameBoard, realPlayer))
@@ -147,6 +178,10 @@ namespace TicTacToe
             }
         }
 
+        /// <summary>
+        /// Метод подсчитывающий количество побед игроков и вывод сообщений о победе или проигрыше или ничье
+        /// </summary>
+        /// <param name="choice"></param>
         private void Score(int choice)
         {
             switch (choice)
@@ -164,6 +199,12 @@ namespace TicTacToe
             }
         }
 
+        /// <summary>
+        /// Метод проверяющий выигрыш пользователя или компьютера
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="str"></param>
+        /// <returns></returns>
         private bool IsWin(char[] board, char str) => board[0] == str && board[1] == str && board[2] == str
                || board[3] == str && board[4] == str && board[5] == str
                || board[6] == str && board[7] == str && board[8] == str
@@ -173,6 +214,11 @@ namespace TicTacToe
                || board[0] == str && board[4] == str && board[8] == str
                || board[2] == str && board[4] == str && board[6] == str;
 
+        /// <summary>
+        /// Метод находящий пустые индексы в игровом поле
+        /// </summary>
+        /// <param name="board"></param>
+        /// <returns></returns>
         private List<int> EmptyIndexes(char[] board)
         {
             List<int> list = new List<int>();
@@ -183,6 +229,12 @@ namespace TicTacToe
             return list;
         }
 
+        /// <summary>
+        /// Метод реализующий алгоритм Минимакс для исполнения хода компьютера
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="forWho"></param>
+        /// <returns></returns>
         private Move Minimax(char[] board, char forWho)
         {
             var availSpots = EmptyIndexes(board);
@@ -256,20 +308,33 @@ namespace TicTacToe
             return moves[bestMove];
         }
 
+        /// <summary>
+        /// Обработчик события кнопки выбора первого игрока - пользователь
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             _firstPlayer = true;
-            pcPlayer =(char) Player.O;
-            realPlayer = (char) Player.X;
+            pcPlayer = (char)Player.O;
+            realPlayer = (char)Player.X;
         }
 
+        /// <summary>
+        /// Обработчик события кнопки выбора первого игрока - ИИ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             _firstPlayer = false;
-            pcPlayer = (char) Player.X;
-            realPlayer =(char) Player.O;
+            pcPlayer = (char)Player.X;
+            realPlayer = (char)Player.O;
         }
     }
+    /// <summary>
+    /// Вспомагательный класс реализующий ход компьютера (поля: Символ, Индекс, Счет)
+    /// </summary>
     public class Move
     {
         public int Index { get; set; }
